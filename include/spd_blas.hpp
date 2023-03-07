@@ -1,5 +1,5 @@
 #include "spd_gpu_blas.hpp"
-
+#include <stdio.h>
 #ifndef __SPD_BLAS_HEADER
 #define __SPD_BLAS_HEADER
 

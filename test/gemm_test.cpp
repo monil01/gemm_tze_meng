@@ -1,5 +1,5 @@
 #include <iostream>
-#include "spd_blas_API.hpp"
+#include "spd_blas.hpp"
 #include <cuda_runtime.h>
 #include <math.h>
 
