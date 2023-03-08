@@ -1,5 +1,9 @@
 #include "spd_gpu_blas.hpp"
 #include <stdio.h>
+#include <iostream>
+
+using namespace std;
+
 #ifndef __SPD_BLAS_HEADER
 #define __SPD_BLAS_HEADER
 
@@ -45,5 +49,7 @@ void spd_trsm(SPD_DIRECTION SIDE,
 	      T *X, size_t ldx,
 	      SPD_DEVICE device_type);
 
+
+//auto spd_gemm_dgemm = spd_gemm<double>;
 
 #endif

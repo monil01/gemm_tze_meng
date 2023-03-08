@@ -1,17 +1,26 @@
-
 CC = nvcc
 LDFLAGS = -L. -lcudart
-CFLAGS = -I../include -g
+CFLAGS = -I../include 
 
 
+all: gpu_lib test
 
-all: gemm_lib test
+gpu_blas:
+	$(CC) $(CFLAGS) --default-stream per-thread -Xcompiler -fPIC -shared  ../src/spd_gpu_blas.cu -c 
 
-gemm_lib:
-	$(CC) $(CFLAGS) -Xcompiler -fPIC -shared -o libgemm_lib.so ../src/gemm.cu
+gpu_gemm:
+	$(CC) $(CFLAGS) --default-stream per-thread -Xcompiler -fPIC -shared  ../src/spd_gpu_gemm.cu -c
 
-test:
-	$(CC) $(CFLAGS) gemm_test.cpp  -o gemm_test.x $(LDFLAGS) -lgemm_lib
+
+gpu_lib: gpu_blas gpu_gemm
+	ar cr libspd_gpu.a spd_gpu_blas.o spd_gpu_gemm.o
+
+
+stream: gpu_lib 
+	$(CC) $(CFLAGS) stream.cu -o stream.x $(LDFLAGS) -lspd_gpu 
+
+test:	
+	$(CC) $(CFLAGS) gemm_test.cpp  -o gemm_test.x $(LDFLAGS) -lspd_gpu
 
 clean:
-	rm -f *~ \#*\# *.o *.x
+	rm -f *~ \#*\# *.o *.x *.so *.a

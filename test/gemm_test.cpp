@@ -54,6 +54,8 @@ int main()
 	   dev_c, N,
 	   SPD_GPU);
 
+  cudaDeviceSynchronize();
+  
   cudaMemcpy(gpu_c, dev_c, N * N * sizeof(double),
 	     cudaMemcpyDeviceToHost);
 

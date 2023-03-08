@@ -1,6 +1,9 @@
 #include <iostream>
 #include "spd_gpu_blas.hpp"
 
+extern int cur_stream;
+extern cudaStream_t streams[4];
+
 using namespace std;
 
 #define CUDA_CHECK(routine, msg)   \
@@ -12,12 +15,13 @@ using namespace std;
       return status; \
     } \
   }
+
 template<typename T>
 __global__ void _gemm_ker(size_t M, size_t N, size_t K,
-			     T alpha,
-			     T *A, size_t lda, T *B, size_t ldb,
-			     T beta,
-			     T *C, size_t ldc)
+			  T alpha,
+			  T *A, size_t lda, T *B, size_t ldb,
+			  T beta,
+		 	  T *C, size_t ldc)
 {
   if (blockIdx.x == 0 && threadIdx.x == 0 &&
       blockIdx.y == 0 && threadIdx.y == 0)
@@ -39,8 +43,12 @@ void spd_gpu_gemm(size_t M, size_t N, size_t K,
 		  T beta,
 		  T *C, size_t ldc)
 {
-  _gemm_ker<<<4, 128, 0>>>(M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
+  init_spd();
+  
+  _gemm_ker<<<1, 128, 0, streams[cur_stream]>>>(M, N, K, alpha, A, lda, B, ldb, beta, C, ldc);
+  cur_stream = (cur_stream + 1) % SPD_NUM_STREAMS;
 }
+
 
 auto spd_gpu_dgemm = spd_gpu_gemm<double>;
 auto spd_gpu_sgemm = spd_gpu_gemm<float>;
