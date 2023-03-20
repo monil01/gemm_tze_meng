@@ -40,26 +40,23 @@ int main()
 
   
   spd_gemm(N, N, N,
-	     1.0,
-	     a, N, b, N,
-	     1.0,
-	     c, N,
-	     SPD_CPU);
-
-
-  spd_gemm(N, N, N,
 	   1.0,
 	   dev_a, N, dev_b, N,
 	   1.0,
 	   dev_c, N,
 	   SPD_GPU);
 
+  spd_gemm(N, N, N,
+	     1.0,
+	     a, N, b, N,
+	     1.0,
+	     c, N,
+	     SPD_CPU);
+  
   cudaDeviceSynchronize();
   
   cudaMemcpy(gpu_c, dev_c, N * N * sizeof(double),
 	     cudaMemcpyDeviceToHost);
-
-  
 
   bool correct = true;
   for (int i = 0; i != N*N; ++i)
